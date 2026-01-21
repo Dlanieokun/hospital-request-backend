@@ -24,6 +24,13 @@ class SettingController extends Controller
         return response()->json($json, 200);
     }
 
+    public function requestList()
+    {
+        $certificates = Certificate::with(['subQuestions', 'subOptions'])->get();
+
+        return response()->json($certificates, 200);
+    }
+
     // POST /settings
     public function store(Request $request)
     {

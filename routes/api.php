@@ -10,6 +10,8 @@ use App\Http\Controllers\ReceiptController;
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
+Route::get('/request', [SettingController::class, 'requestList']);
+
 // Protected routes
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', function (Request $request) {
