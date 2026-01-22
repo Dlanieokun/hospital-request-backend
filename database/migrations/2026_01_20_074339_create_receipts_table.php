@@ -20,6 +20,8 @@ return new class extends Migration
             $table->integer('paid');
             $table->string('ref')->nullable();
             $table->string('status')->default('Pending');
+            $table->date('date')->nullable();
+            $table->time('time')->nullable();
             $table->string('status-request')->default('request');
             $table->timestamps();
         });
@@ -30,6 +32,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('reciept');
+        Schema::dropIfExists('receipts');
     }
 };

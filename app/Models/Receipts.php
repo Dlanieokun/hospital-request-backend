@@ -8,6 +8,13 @@ class Receipts extends Model
 {
     protected $connection = 'mysql';
 
-    protected $fillable = ['reference', 'name', 'paid', 'status'];
-    //
+    protected $fillable = [
+        'reference', 'name', 'paid', 'mode', 'ref',
+        'status', 'date', 'time', 'status-request'
+    ];
+
+    public function certificateRequests()
+    {
+        return $this->hasMany(CertificateRequest::class, 'receipt_id');
+    }
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Receipts;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -45,20 +46,95 @@ class ReceiptController extends Controller
         return response()->json($patient_date, 200);
     }
 
-    public function storeReciept(Request $request) {
-        // Insert the data into the 'receipts' table
-        DB::table('receipts')->insert([
-            'reference'  => $request->transactionId,
-            'name'       => $request->userName,
-            'paid'       => $request->total,
-            'mode'       => $request->paymentMethod,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+    public function storeReceipt(Request $request)
+    {
+        return DB::transaction(function () use ($request) {
+            // 1. Create the Main Receipt
+            $receipt = Receipts::create([
+                'reference'      => $request->transactionId,
+                'name'           => $request->userName,
+                'paid'           => $request->total,
+                'mode'           => $request->paymentMethod,
+                'ref'            => $request->p_id,
+                'date'           => Carbon::parse($request->input('arrival.date'))->format('Y-m-d'),
+                'time'           => $request->input('arrival.time'),
+                'status'         => 'Pending',
+                'status-request' => 'request',
+            ]);
 
+            // 2. Loop through each item in the 'requests' array
+            foreach ($request->input('requests', []) as $certData) {
 
+                // Insert into certificate_requests and get the ID for child tables
+                $certificateRequestId = DB::table('certificate_requests')->insertGetId([
+                    'receipt_id'     => $receipt->id,
+                    'certificate_id' => $certData['id'], // mapping requests[].id to certificate_id
+                    'created_at'     => now(),
+                    'updated_at'     => now(),
+                ]);
 
-        return response()->json(['message' => 'Receipt created successfully'], 201);
+                // 3. Handle sub_option nested array
+                if (isset($certData['sub_option']) && is_array($certData['sub_option'])) {
+                    foreach ($certData['sub_option'] as $option) {
+                        DB::table('sub_option_request')->insert([
+                            'certificate_id' => $certificateRequestId, // links to certificate_requests.id
+                            'sub_option_id'  => $option['id'],
+                            'created_at'     => now(),
+                            'updated_at'     => now(),
+                        ]);
+                    }
+                }
+
+                // 4. Handle sub_question nested array
+                if (isset($certData['sub_question']) && is_array($certData['sub_question'])) {
+                    foreach ($certData['sub_question'] as $question) {
+                        DB::table('sub_question_request')->insert([
+                            'certificate_id'  => $certificateRequestId, // links to certificate_requests.id
+                            'sub_question_id' => $question['id'],
+                            'answer'          => $question['answer'] ?? null,
+                            'created_at'      => now(),
+                            'updated_at'      => now(),
+                        ]);
+                    }
+                }
+            }
+
+            return response()->json([
+                'message' => 'Transaction completed successfully',
+                'receipt_id' => $receipt->id
+            ], 201);
+        });
+    }
+
+    public function getReceipt($id)
+    {
+        $receipt = Receipts::with([
+            'certificateRequests.details',
+            'certificateRequests.subOptions.details',
+            'certificateRequests.subQuestions.details'
+        ])->find($id);
+
+        if (!$receipt) {
+            return response()->json(['message' => 'Not Found'], 404);
+        }
+
+        return response()->json($receipt);
+    }
+
+    public function AllReceipt()
+    {
+        // Eager load all levels of the relationship hierarchy
+        $receipts = Receipts::with([
+            'certificateRequests.details',
+            'certificateRequests.subOptions.details',
+            'certificateRequests.subQuestions.details'
+        ])->get();
+
+        if ($receipts->isEmpty()) {
+            return response()->json(['message' => 'No receipts found'], 404);
+        }
+
+        return response()->json($receipts, 200);
     }
 
 }

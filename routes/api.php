@@ -12,8 +12,8 @@ Route::post('/login', [AuthController::class, 'login']);
 
 Route::get('/request', [SettingController::class, 'requestList']);
 Route::get('/patient_date/{id}', [ReceiptController::class, 'getDate']);
-Route::post('/receipt_store', [ReceiptController::class, 'storeReciept']);
-
+Route::post('/receipt_store', [ReceiptController::class, 'storeReceipt']);
+Route::get('/receipts/{id}', [ReceiptController::class, 'getReceipt']);
 
 // Protected routes
 Route::middleware('auth:sanctum')->group(function () {
@@ -29,6 +29,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/settings/certificates/{id}', [SettingController::class, 'destroy']);
     Route::get('/receipts', [ReceiptController::class, 'index']);
     Route::put('/receipts/{id}', [ReceiptController::class, 'paid']);
+    Route::get('/receipts', [ReceiptController::class, 'AllReceipt']);
 
 
     Route::post('/logout', [AuthController::class, 'logout']);

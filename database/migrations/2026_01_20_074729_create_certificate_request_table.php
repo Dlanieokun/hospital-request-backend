@@ -16,11 +16,6 @@ return new class extends Migration
             $table->id();
             $table->foreignId('receipt_id')->constrained('receipts')->onDelete('cascade');
             $table->foreignId('certificate_id')->nullable()->constrained('certificates');
-            $table->date('date')->nullable();
-            $table->time('time')->nullable();
-//            $table->foreignId('sub_option_id')->nullable()->constrained('sub_options');
-//            $table->foreignId('sub_question_id')->nullable()->constrained('sub_questions');
-//            $table->string('answer')->nullable();
             $table->timestamps();
         });
     }
