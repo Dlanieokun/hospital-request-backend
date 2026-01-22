@@ -11,12 +11,13 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
 Route::get('/request', [SettingController::class, 'requestList']);
+Route::get('/patient_date/{id}', [ReceiptController::class, 'getDate']);
+Route::post('/receipt_store', [ReceiptController::class, 'storeReciept']);
+
 
 // Protected routes
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', function (Request $request) {
-        // This returns the authenticated user's data
-//        return response()->json($request->user(), 200);
         return response()->json("User", 200);
     });
     Route::apiResource('settings', SettingController::class);

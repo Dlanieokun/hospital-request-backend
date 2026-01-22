@@ -16,8 +16,11 @@ return new class extends Migration
             $table->id();
             $table->string('reference');
             $table->string('name');
+            $table->string('mode');
             $table->integer('paid');
+            $table->string('ref')->nullable();
             $table->string('status')->default('Pending');
+            $table->string('status-request')->default('request');
             $table->timestamps();
         });
     }
