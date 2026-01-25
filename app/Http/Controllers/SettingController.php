@@ -38,7 +38,7 @@ class SettingController extends Controller
         $validated = $request->validate([
             'name'                      => 'required|string|unique:certificates,name',
             'fee'                       => 'required|numeric|min:0',
-            'days'                      => 'required|integer|min:1',
+            'days'                      => 'required|integer|min:0',
             'sub_options'               => 'nullable|array',
             'sub_options.*.name'        => 'required|string',
             'sub_questions'             => 'nullable|array',

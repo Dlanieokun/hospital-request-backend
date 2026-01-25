@@ -8,11 +8,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class CertificateRequest extends Model
 {
     protected $table = 'certificate_requests';
-    protected $fillable = ['receipt_id', 'certificate_id'];
+    protected $fillable = ['receipt_id', 'certificate_id', 'copies'];
 
     public function details(): BelongsTo
     {
-        // Use belongsTo because the 'certificate_id' is on THIS table.
         return $this->belongsTo(Certificate::class, 'certificate_id');
     }
 

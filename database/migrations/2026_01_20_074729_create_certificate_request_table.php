@@ -16,6 +16,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('receipt_id')->constrained('receipts')->onDelete('cascade');
             $table->foreignId('certificate_id')->nullable()->constrained('certificates');
+            $table->integer('copies')->default(1);
             $table->timestamps();
         });
     }

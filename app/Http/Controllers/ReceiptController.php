@@ -22,6 +22,8 @@ class ReceiptController extends Controller
         $receipt = Receipts::findOrFail($id);
 
         $receipt->status = 'paid';
+        $receipt->status_request = 'request';
+        $receipt->request_date = now();
         $receipt->save();
 
         return response()->json([
@@ -59,7 +61,6 @@ class ReceiptController extends Controller
                 'date'           => Carbon::parse($request->input('arrival.date'))->format('Y-m-d'),
                 'time'           => $request->input('arrival.time'),
                 'status'         => 'Pending',
-                'status-request' => 'request',
             ]);
 
             // 2. Loop through each item in the 'requests' array
@@ -68,7 +69,8 @@ class ReceiptController extends Controller
                 // Insert into certificate_requests and get the ID for child tables
                 $certificateRequestId = DB::table('certificate_requests')->insertGetId([
                     'receipt_id'     => $receipt->id,
-                    'certificate_id' => $certData['id'], // mapping requests[].id to certificate_id
+                    'certificate_id' => $certData['id'],
+                    'copies' => $certData['copies'],
                     'created_at'     => now(),
                     'updated_at'     => now(),
                 ]);
@@ -77,7 +79,7 @@ class ReceiptController extends Controller
                 if (isset($certData['sub_option']) && is_array($certData['sub_option'])) {
                     foreach ($certData['sub_option'] as $option) {
                         DB::table('sub_option_request')->insert([
-                            'certificate_id' => $certificateRequestId, // links to certificate_requests.id
+                            'certificate_id' => $certificateRequestId,
                             'sub_option_id'  => $option['id'],
                             'created_at'     => now(),
                             'updated_at'     => now(),
@@ -128,13 +130,28 @@ class ReceiptController extends Controller
             'certificateRequests.details',
             'certificateRequests.subOptions.details',
             'certificateRequests.subQuestions.details'
-        ])->get();
+        ])->whereNot('status_request', '=', 'pending')->get();
 
         if ($receipts->isEmpty()) {
             return response()->json(['message' => 'No receipts found'], 404);
         }
 
         return response()->json($receipts, 200);
+    }
+
+    public function receiptRelease(Request $request, $id)
+    {
+        $receipt = Receipts::find($id);
+
+        if (!$receipt) {
+            return response()->json(['message' => 'Not Found'], 404);
+        }
+
+        $receipt->status_request = $request->status;
+        $receipt->release_date = now();
+        $receipt->save();
+
+        return response()->json($receipt, 200);
     }
 
 }

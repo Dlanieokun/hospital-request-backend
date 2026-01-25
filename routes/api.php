@@ -29,7 +29,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/settings/certificates/{id}', [SettingController::class, 'destroy']);
     Route::get('/receipts', [ReceiptController::class, 'index']);
     Route::put('/receipts/{id}', [ReceiptController::class, 'paid']);
-    Route::get('/receipts', [ReceiptController::class, 'AllReceipt']);
+    Route::get('/certificates', [ReceiptController::class, 'AllReceipt']);
+    Route::patch('/receipts/{id}', [ReceiptController::class, 'receiptRelease']);
 
 
     Route::post('/logout', [AuthController::class, 'logout']);

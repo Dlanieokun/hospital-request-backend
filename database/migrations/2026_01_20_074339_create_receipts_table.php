@@ -22,7 +22,9 @@ return new class extends Migration
             $table->string('status')->default('Pending');
             $table->date('date')->nullable();
             $table->time('time')->nullable();
-            $table->string('status-request')->default('request');
+            $table->timestamp('request_date')->nullable();
+            $table->timestamp('release_date')->nullable();
+            $table->string('status_request')->default('pending');
             $table->timestamps();
         });
     }

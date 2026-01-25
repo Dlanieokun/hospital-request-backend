@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use function Illuminate\Queue\release;
 
 class Receipts extends Model
 {
@@ -10,7 +11,7 @@ class Receipts extends Model
 
     protected $fillable = [
         'reference', 'name', 'paid', 'mode', 'ref',
-        'status', 'date', 'time', 'status-request'
+        'status', 'date', 'time', 'status_request', 'release_date', 'request_date',
     ];
 
     public function certificateRequests()
