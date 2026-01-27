@@ -155,7 +155,7 @@ class ReceiptController extends Controller
 
     public function onlineReceipt()
     {
-        $receipts = Receipts::pluck('ref');
+        $receipts = Receipts::where('mode', '=', 'online')->pluck('ref');
 
         return response()->json($receipts, 200);
     }

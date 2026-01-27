@@ -34,7 +34,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/certificates', [ReceiptController::class, 'AllReceipt']);
     Route::patch('/receipts/{id}', [ReceiptController::class, 'receiptRelease']);
     Route::get('/dashboard', [DashboardController::class, 'overview']);
-    Route::get('/online-status', [ReceiptController::class, 'onlineReceipt']);
+    Route::get('/online-list', [ReceiptController::class, 'onlineReceipt']);
 
     Route::post('/logout', [AuthController::class, 'logout']);
 });
