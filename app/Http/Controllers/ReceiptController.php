@@ -57,7 +57,6 @@ class ReceiptController extends Controller
                 'name'           => $request->userName,
                 'paid'           => $request->total,
                 'mode'           => $request->paymentMethod,
-                'ref'            => $request->p_id,
                 'date'           => Carbon::parse($request->input('arrival.date'))->format('Y-m-d'),
                 'time'           => $request->input('arrival.time'),
                 'status'         => 'Pending',
@@ -152,6 +151,25 @@ class ReceiptController extends Controller
         $receipt->save();
 
         return response()->json($receipt, 200);
+    }
+
+    public function onlineReceipt()
+    {
+        $receipts = Receipts::pluck('ref');
+
+        return response()->json($receipts, 200);
+    }
+
+    public function setReceipt(Request $request, $id)
+    {
+        $updated = Receipts::where('reference', $id)
+            ->update(['ref' => $request->ref]);
+
+        if ($updated === 0) {
+            return response()->json(['message' => 'Receipt not found'], 404);
+        }
+
+        return response()->json(['message' => 'Updated successfully'], 200);
     }
 
 }

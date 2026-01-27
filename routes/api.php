@@ -5,6 +5,7 @@ use Illuminate\Http\Request; // Added this import
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\ReceiptController;
+use App\Http\Controllers\DashboardController;
 
 // Public routes
 Route::post('/register', [AuthController::class, 'register']);
@@ -14,6 +15,7 @@ Route::get('/request', [SettingController::class, 'requestList']);
 Route::get('/patient_date/{id}', [ReceiptController::class, 'getDate']);
 Route::post('/receipt_store', [ReceiptController::class, 'storeReceipt']);
 Route::get('/receipts/{id}', [ReceiptController::class, 'getReceipt']);
+Route::post('/online-ref/{id}', [ReceiptController::class, 'setReceipt']);
 
 // Protected routes
 Route::middleware('auth:sanctum')->group(function () {
@@ -31,7 +33,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/receipts/{id}', [ReceiptController::class, 'paid']);
     Route::get('/certificates', [ReceiptController::class, 'AllReceipt']);
     Route::patch('/receipts/{id}', [ReceiptController::class, 'receiptRelease']);
-
+    Route::get('/dashboard', [DashboardController::class, 'overview']);
+    Route::get('/online-status', [ReceiptController::class, 'onlineReceipt']);
 
     Route::post('/logout', [AuthController::class, 'logout']);
 });
