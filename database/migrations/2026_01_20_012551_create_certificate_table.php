@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('name');
             $table->integer('fee');
             $table->integer('days');
+            $table->string('url')->nullable();
             $table->timestamps();
         });
     }

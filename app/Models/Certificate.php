@@ -10,7 +10,7 @@ class Certificate extends Model
     use HasFactory;
     protected $connection = 'mysql';
 
-    protected $fillable = ['name', 'fee', 'days'];
+    protected $fillable = ['name', 'fee', 'days', 'url'];
 
     public function subQuestions()
     {

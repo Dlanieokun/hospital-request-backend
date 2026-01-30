@@ -38,6 +38,7 @@ class ReceiptController extends Controller
             ->table('patient_case_tbl')
             ->selectRaw('DATE(arrival_date) AS date')
             ->selectRaw('TIME(arrival_time) AS time')
+            ->selectRaw('id AS case_id')
             ->where('patient_id', $id)
             ->get();
 

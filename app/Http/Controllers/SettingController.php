@@ -39,6 +39,7 @@ class SettingController extends Controller
             'name'                      => 'required|string|unique:certificates,name',
             'fee'                       => 'required|numeric|min:0',
             'days'                      => 'required|integer|min:0',
+            'url'                       => 'nullable|string',
             'sub_options'               => 'nullable|array',
             'sub_options.*.name'        => 'required|string',
             'sub_questions'             => 'nullable|array',
@@ -52,6 +53,7 @@ class SettingController extends Controller
                 'name' => $validated['name'],
                 'fee'  => $validated['fee'],
                 'days' => $validated['days'],
+                'url' => $validated['url'],
             ]);
 
             // 3. Create children (createMany ignores keys not in $fillable)
@@ -80,7 +82,6 @@ class SettingController extends Controller
         return response()->json($certificate, 200);
     }
 
-    // PUT /settings/{id}
     public function update(Request $request, $id)
     {
         $certificate = Certificate::findOrFail($id);
@@ -88,7 +89,8 @@ class SettingController extends Controller
         $validated = $request->validate([
             'name'                      => 'required|string|unique:certificates,name,' . $id,
             'fee'                       => 'required|numeric|min:0',
-            'days'                      => 'required|integer|min:1',
+            'days'                      => 'required|integer|min:0',
+            'url'                       => 'nullable|string',
             'sub_options'               => 'nullable|array',
             'sub_options.*.id'          => 'nullable',
             'sub_options.*.name'        => 'required|string',
@@ -104,6 +106,7 @@ class SettingController extends Controller
                 'name' => $validated['name'],
                 'fee'  => $validated['fee'],
                 'days' => $validated['days'],
+                'url' => $validated['url'],
             ]);
 
             // 2. Sync Sub-Options
