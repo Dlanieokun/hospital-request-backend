@@ -10,7 +10,7 @@ class Certificate extends Model
     use HasFactory;
     protected $connection = 'mysql';
 
-    protected $fillable = ['name', 'fee', 'days', 'url'];
+    protected $fillable = ['name', 'fee', 'days', 'url', 'syn_cert'];
 
     public function subQuestions()
     {
@@ -18,6 +18,11 @@ class Certificate extends Model
     }
 
     public function subOptions()
+    {
+        return $this->hasMany(SubOption::class);
+    }
+
+    public function synData()
     {
         return $this->hasMany(SubOption::class);
     }

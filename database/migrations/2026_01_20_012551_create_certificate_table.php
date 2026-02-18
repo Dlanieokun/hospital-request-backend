@@ -18,6 +18,7 @@ return new class extends Migration
             $table->integer('fee');
             $table->integer('days');
             $table->string('url')->nullable();
+            $table->string('syn_cert')->nullable();
             $table->timestamps();
         });
     }

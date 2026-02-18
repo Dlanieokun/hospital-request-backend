@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Certificate;
+use App\Models\DataMapping;
 use App\Models\User;
 use function Illuminate\Foundation\Testing\Concerns\json;
 use Illuminate\Http\Request;
@@ -164,5 +165,51 @@ class SettingController extends Controller
             'message' => 'Certificate and all associated questions/options deleted successfully'
         ], 200);
     }
+
+    // Post Sync ===============
+    public function dataMapping(Request $request, $id)
+    {
+        // 1. Find the certificate. If $id is 0 or non-existent, this throws a 404.
+        $cert = Certificate::findOrFail($id);
+
+        // 2. Updated validation to allow 'null' for key_sync
+        $validated = $request->validate([
+            'sync_name' => 'required|string|max:255',
+            'data' => 'nullable|array',
+            'data.*.key' => 'required|string',
+            'data.*.key_sync' => 'nullable|string', // Changed from 'required' to 'nullable'
+        ]);
+
+        DB::transaction(function () use ($cert, $validated) {
+
+            // 3. Update certificate sync name
+            $cert->update([
+                'syn_cert' => $validated['sync_name']
+            ]);
+
+            // 4. Clear old mappings using the table defined in your model ('sync_data')
+            DataMapping::where('certificate_id', $cert->id)->delete();
+
+            // 5. Insert new mappings safely
+            if (!empty($validated['data'])) {
+                $mappings = collect($validated['data'])->map(function ($item) use ($cert) {
+                    return [
+                        'certificate_id' => $cert->id,
+                        'key'            => $item['key'],
+                        'key_sync'       => $item['key_sync'],
+                        'created_at'     => now(),
+                        'updated_at'     => now(),
+                    ];
+                });
+
+                DataMapping::insert($mappings->toArray());
+            }
+        });
+
+        return response()->json([
+            'message' => 'Mapping completed successfully'
+        ], 200);
+    }
+
 }
 
