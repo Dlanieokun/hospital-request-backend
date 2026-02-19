@@ -24,6 +24,6 @@ class Certificate extends Model
 
     public function synData()
     {
-        return $this->hasMany(SubOption::class);
+        return $this->hasMany(DataMapping::class);
     }
 }

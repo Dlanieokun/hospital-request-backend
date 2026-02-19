@@ -28,7 +28,7 @@ class CertificateRequest extends Model
 
     public function syncData()
     {
-        return $this->hasMany(DataMapping::class, 'certificate_id');
+        return $this->hasMany(DataMapping::class, 'certificate_id', 'certificate_id');
     }
 
 

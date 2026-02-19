@@ -150,6 +150,7 @@ class ReceiptController extends Controller
         }
 
         $receipt->status_request = $request->status;
+        $receipt->receiver_name = $request->receiver_name;
         $receipt->release_date = now();
         $receipt->save();
 
