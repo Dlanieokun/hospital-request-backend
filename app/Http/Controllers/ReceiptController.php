@@ -38,6 +38,7 @@ class ReceiptController extends Controller
             ->table('patient_case_tbl')
             ->selectRaw('DATE(arrival_date) AS date')
             ->selectRaw('TIME(arrival_time) AS time')
+            ->selectRaw('id AS case_id')
             ->where('patient_id', $id)
             ->get();
 
@@ -59,6 +60,7 @@ class ReceiptController extends Controller
                 'mode'           => $request->paymentMethod,
                 'date'           => Carbon::parse($request->input('arrival.date'))->format('Y-m-d'),
                 'time'           => $request->input('arrival.time'),
+                'case_id'        => $request->input('arrival.case_id'),
                 'status'         => 'Pending',
             ]);
 
@@ -128,7 +130,8 @@ class ReceiptController extends Controller
         $receipts = Receipts::with([
             'certificateRequests.details',
             'certificateRequests.subOptions.details',
-            'certificateRequests.subQuestions.details'
+            'certificateRequests.subQuestions.details',
+            'certificateRequests.syncData'
         ])->whereNot('status_request', '=', 'pending')->get();
 
         if ($receipts->isEmpty()) {
@@ -147,6 +150,7 @@ class ReceiptController extends Controller
         }
 
         $receipt->status_request = $request->status;
+        $receipt->receiver_name = $request->receiver_name;
         $receipt->release_date = now();
         $receipt->save();
 
@@ -155,10 +159,26 @@ class ReceiptController extends Controller
 
     public function onlineReceipt()
     {
-        $receipts = Receipts::pluck('ref');
+        $receipts = Receipts::where('mode', '=', 'online')->wherenot('ref', '=', null)->pluck('ref');
 
         return response()->json($receipts, 200);
     }
+
+    public function onlinePaid(Request $request)
+    {
+        foreach ($request->all() as $payment) {
+            if (
+                isset($payment['payment_status'], $payment['bux_transaction_id']) &&
+                $payment['payment_status'] === 'paid'
+            ) {
+                Receipts::where('ref', $payment['bux_transaction_id'])
+                    ->update(['status' => 'paid']);
+            }
+        }
+
+        return response()->json(['message' => 'Processed'], 200);
+    }
+
 
     public function setReceipt(Request $request, $id)
     {

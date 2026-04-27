@@ -19,6 +19,8 @@ Route::post('/online-ref/{id}', [ReceiptController::class, 'setReceipt']);
 
 // Protected routes
 Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/sync/{id}', [SettingController::class, 'dataMapping']);
+
     Route::get('/user', function (Request $request) {
         return response()->json("User", 200);
     });
@@ -34,7 +36,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/certificates', [ReceiptController::class, 'AllReceipt']);
     Route::patch('/receipts/{id}', [ReceiptController::class, 'receiptRelease']);
     Route::get('/dashboard', [DashboardController::class, 'overview']);
-    Route::get('/online-status', [ReceiptController::class, 'onlineReceipt']);
+    Route::get('/online-list', [ReceiptController::class, 'onlineReceipt']);
+    Route::post('/online-paid', [ReceiptController::class, 'onlinePaid']);
 
     Route::post('/logout', [AuthController::class, 'logout']);
 });

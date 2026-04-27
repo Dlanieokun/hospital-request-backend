@@ -11,7 +11,7 @@ class Receipts extends Model
 
     protected $fillable = [
         'reference', 'name', 'paid', 'mode', 'ref',
-        'status', 'date', 'time', 'status_request', 'release_date', 'request_date',
+        'status', 'date', 'time', 'case_id', 'status_request', 'release_date', 'request_date', 'receiver_name'
     ];
 
     public function certificateRequests()
