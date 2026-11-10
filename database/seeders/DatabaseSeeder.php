@@ -19,7 +19,7 @@ class DatabaseSeeder extends Seeder
             'name' => 'Developer',
             'email' => 'ronald.1999.mercado@gmail.com',
             'username' => 'Admin',
-            'role' => 'Administrator', // make sure column exists
+            'role' => 'Administrator',
             'password' => Hash::make('Aa@1234!'),
         ]);
     }

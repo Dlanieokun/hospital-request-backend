@@ -16,6 +16,7 @@ Route::get('/patient_date/{id}', [ReceiptController::class, 'getDate']);
 Route::post('/receipt_store', [ReceiptController::class, 'storeReceipt']);
 Route::get('/receipts/{id}', [ReceiptController::class, 'getReceipt']);
 Route::post('/online-ref/{id}', [ReceiptController::class, 'setReceipt']);
+Route::post('/report', [ReceiptController::class, 'generateReport']);
 
 // Protected routes
 Route::middleware('auth:sanctum')->group(function () {
